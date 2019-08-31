@@ -1,0 +1,58 @@
+version: "3"
+services:
+#/root/docker/web/myweb
+  web1:
+    build:
+      context: ./web/myweb
+    restart: always
+    container_name: docker_web_1
+    volumes:
+        - "/etc/localtime:/etc/localtime:ro"
+        - "./web/myweb/db.sqlite3:/docker_api/db.sqlite3"
+    ports:
+      - "8085:8080"
+    networks:
+      - webnet
+
+  web2:
+      build:
+        context: ./web/myweb
+      restart: always
+      container_name: docker_web_2
+      volumes:
+         - "/etc/localtime:/etc/localtime:ro"
+         - "./web/myweb/db.sqlite3:/docker_api/db.sqlite3"
+      ports:
+         - "8086:8080"
+      networks:
+         - webnet
+
+  web3:
+      build:
+        context: ./web/myweb
+      restart: always
+      container_name: docker_web_3
+      volumes:
+         - "/etc/localtime:/etc/localtime:ro"
+         - "./web/myweb/db.sqlite3:/docker_api/db.sqlite3"
+      ports:
+         - "8087:8080"
+      networks:
+         - webnet
+
+  haproxy:
+    image: haproxy:1.5.19
+    restart: always
+    volumes:
+      - "./haproxy/config:/usr/local/etc/haproxy"
+    links:
+      - web1
+      - web2
+      - web3
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - webnet
+networks:
+    webnet:
